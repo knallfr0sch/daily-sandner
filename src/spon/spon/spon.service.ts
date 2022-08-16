@@ -8,6 +8,10 @@ import { isSponLoginInfo, SARA_DATA, SpiegelWindow, SponLoginInfo } from '../typ
 import { Reader } from 'src/domain/reader';
 import { ConfigService } from '@nestjs/config';
 import { UsernamePasswordLogin } from 'src/domain/usernamePasswordLogin';
+import { LoginFlow } from 'src/domain/login-flow';
+import { Realm } from 'src/domain/realm';
+import { ReadabilityArticle } from 'src/domain/article';
+import { ArticleScraper } from 'src/domain/article-scraper';
 
 
 // SPON
@@ -15,11 +19,11 @@ const SPON_URL: string = 'https://www.spiegel.de/'
 const SPON_FILENAME: string = 'spiegel.png';
 
 // LOGIN FORM
-const spon_login_url = 'https://gruppenkonto.spiegel.de/authenticate?requestAccessToken=true&targetUrl=https%3A%2F%2Fwww.spiegel.de%2Ffuermich%2F'
-const spon_login_input_name = '#loginname'
-const spon_login_input_password = '#password'
-const spon_remember_checkbox = 'loginAutologin_input'
-const spon_submit_button = '#submit'
+const spon_login_url = 'https://gruppenkonto.spiegel.de/authenticate?requestAccessToken=true&targetUrl=https%3A%2F%2Fwww.spiegel.de%2Ffuermich%2F';
+const spon_login_input_name = '#loginname';
+const spon_login_input_password = '#password';
+const spon_remember_checkbox = 'loginAutologin_input';
+const spon_submit_button = '#submit';
 
 // CREDENTIALS
 const SPON_USER_NAME_KEY = "SPON_USER_NAME";
@@ -27,7 +31,7 @@ const SPON_USER_PASSWORD_KEY = "SPON_USER_PASSWORD"
 
 
 @Injectable()
-export class SponService implements OnModuleInit {
+export class SponService implements LoginFlow, Realm, ArticleScraper ,OnModuleInit {
   private page: Page;
   private loginInfo: UsernamePasswordLogin = {username: "", password: ""};
   
@@ -45,7 +49,8 @@ export class SponService implements OnModuleInit {
     this.page = await this.puppeteerService.getNewPage();
 
     await this.visitHomepage();
-    await this.processArticle();
+    const exampleArticle = "https://www.spiegel.de/politik/deutschland/energiekrise-drehen-wir-den-spiess-um-und-oeffnen-nord-stream-2-kolumne-a-f59e705d-5a9b-4457-aee0-ceceee6796cc";
+    await this.processArticle(exampleArticle);
   }
 
   getBaseUrl(): string {
@@ -76,9 +81,8 @@ export class SponService implements OnModuleInit {
 
     await page.goto(spon_login_url)
     await page.screenshot({path: SCREENSHOT_DIR + "spiegel_login.png"})
-    const typeOptions: { delay: number } = { delay: 150 };
-    await page.type(spon_login_input_name, this.loginInfo.username, typeOptions)
-    await page.type(spon_login_input_password, this.loginInfo.password, typeOptions)
+    await page.type(spon_login_input_name, this.loginInfo.username)
+    await page.type(spon_login_input_password, this.loginInfo.password)
 
     await page.evaluate((spon_remember_checkbox: string) => {
         const rememberMeCheckbox: HTMLInputElement = <HTMLInputElement> document.getElementById(
@@ -100,21 +104,21 @@ export class SponService implements OnModuleInit {
   /**
    * 
    */
-  async processArticle(): Promise<void> {
-    const articleUrl = "https://www.spiegel.de/politik/deutschland/energiekrise-drehen-wir-den-spiess-um-und-oeffnen-nord-stream-2-kolumne-a-f59e705d-5a9b-4457-aee0-ceceee6796cc";
+  async processArticle(articleUrl: string): Promise<ReadabilityArticle> {
+    if (!articleUrl.includes(this.getBaseUrl())) {
+      return undefined;
+    }
     await this.page.goto(articleUrl);
 
     const htmlArticle = await this.page.content();
 
     const document = new JSDOM(htmlArticle);
     const article = new Readability(document.window.document).parse();
-
-    this.page.url();
-
     console.log(article.title);
+    return article;
   }
 
-  private async checkLogin(): Promise<Reader> {
+  async checkLogin(): Promise<Reader> {
     const previousUrl: string = this.page.url();
     let returnToUrl = false;
     if (!previousUrl.includes(this.getBaseUrl())) {
