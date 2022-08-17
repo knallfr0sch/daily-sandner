@@ -8,5 +8,5 @@ export interface Realm {
   /**
    * Visits the landing site.
    */
-  visitHomepage(): Promise<void>
+  visitHomepage(): Promise<void>;
 }

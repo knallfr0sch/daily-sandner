@@ -1,4 +1,4 @@
 export interface Reader {
   loggedIn: boolean;
-  activeSubscription: boolean;  
+  activeSubscription: boolean;
 }

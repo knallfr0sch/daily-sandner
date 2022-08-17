@@ -1,5 +1,5 @@
 /**
- * Returned from `readability.js / parse()` 
+ * Returned from `readability.js / parse()`
  */
 export interface ReadabilityArticle {
   title: string;

@@ -1,6 +1,7 @@
 import { Readability } from '@mozilla/readability';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { JSDOM } from 'jsdom';
 import { Page } from 'puppeteer-core';
 import { SCREENSHOT_DIR } from 'src/app.module';
 import { ReadabilityArticle } from 'src/domain/article';
@@ -10,93 +11,111 @@ import { Reader } from 'src/domain/reader';
 import { Realm } from 'src/domain/realm';
 import { UsernamePasswordLogin } from 'src/domain/usernamePasswordLogin';
 import { PuppeteerService } from 'src/puppeteer/puppeteer/puppeteer.service';
+import { HTTPS_PREFIX } from 'src/util/https-prefix';
+import { nodeChildren } from 'src/util/node-children';
 import { EconomistWindow, TEDL } from '../types';
-var { JSDOM } = require('jsdom');
 
 // LOGIN FORM
 const economist_login_url = 'https://www.economist.com/api/auth/login';
-const economist_login_input_name = 'input[name="username"]';
-const economist_login_input_password = 'input[name="password"]';
-
-const economist_submit_button = 'button[type="submit"]';
 
 // CREDENTIALS
-const ECONOMIST_USER_NAME_KEY = "ECONOMIST_USER_NAME";
-const ECONOMIST_USER_PASSWORD_KEY = "ECONOMIST_USER_PASSWORD"
+const ECONOMIST_USER_NAME_KEY = 'ECONOMIST_USER_NAME';
+const ECONOMIST_USER_PASSWORD_KEY = 'ECONOMIST_USER_PASSWORD';
 
 @Injectable()
-export class EconomistService implements Realm, ArticleScraper, LoginFlow
-{
+export class EconomistService implements Realm, ArticleScraper, LoginFlow {
   private page: Page;
-  private loginInfo: UsernamePasswordLogin = {username: "", password: ""};
-  
+  private loginInfo: UsernamePasswordLogin = { username: '', password: '' };
+
   constructor(
     private puppeteerService: PuppeteerService,
-    private configService: ConfigService,
-  ) { }
+    private configService: ConfigService
+  ) {}
 
   async onModuleInit() {
     this.loginInfo.username = this.configService.get<string>(ECONOMIST_USER_NAME_KEY);
     this.loginInfo.password = this.configService.get<string>(ECONOMIST_USER_PASSWORD_KEY);
 
-    console.log(this.loginInfo.username);
-
     this.page = await this.puppeteerService.getNewPage();
+    this.page.exposeFunction('nodeChildren', nodeChildren);
 
     await this.visitHomepage();
-    const exampleArticle = "https://www.economist.com/business/2022/08/15/republicans-are-falling-out-of-love-with-america-inc";
+    const exampleArticle =
+      'https://www.economist.com/business/2022/08/15/republicans-are-falling-out-of-love-with-america-inc';
     await this.processArticle(exampleArticle);
   }
 
   getBaseUrl(): string {
-    return "economist.com"
+    return 'economist.com';
   }
-  
+
   async visitHomepage(): Promise<void> {
     const page = this.page;
-    await page.goto(`https://${this.getBaseUrl()}`);
-    await this.page.exposeFunction("getReader", this.getReader);
+    await page.goto(`${HTTPS_PREFIX}${this.getBaseUrl()}`);
+    await this.page.exposeFunction('getReader', this.getReader);
 
     const isLoggedIn: boolean = (await this.checkLogin()).loggedIn;
     if (!isLoggedIn) {
       await this.login();
-      await page.goto(this.getBaseUrl());
+      await page.goto(`${HTTPS_PREFIX}${this.getBaseUrl()}`);
     }
-    await page.screenshot({path: SCREENSHOT_DIR + this.getBaseUrl()});
+    await page.screenshot({ path: SCREENSHOT_DIR + this.getBaseUrl() + ".png" });
   }
 
   /**
    * Logs into The Economist
    */
-   async login(): Promise<Reader> {
+  async login(): Promise<Reader> {
     const page = this.page;
 
     await page.goto(economist_login_url);
-    await page.waitForSelector(economist_login_input_name);
-    await page.screenshot({path: SCREENSHOT_DIR + "economist_" + "login" + ".png"});
+    await page.screenshot({
+      path: SCREENSHOT_DIR + 'economist_' + 'login' + '.png',
+    });
 
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // document.querySelector("c-lwc-login-form").shadowRoot.querySelector("lightning-card").shadowRoot.querySelector('.slds-card__body').children[0].assignedNodes()[4].getElementsByTagName("input");
-    // document.querySelector("c-lwc-login-form").shadowRoot.querySelector("lightning-card").shadowRoot.querySelector('.slds-card__body').children[0].assignedNodes()[4].getElementsByTagName("input");
-    // document.querySelector("c-lwc-login-form").shadowRoot.querySelector("lightning-card").shadowRoot.querySelector('.slds-card__body').children[0].assignedNodes()[4].getElementsByTagName("input");
-    // document.querySelector("c-lwc-login-form").shadowRoot.querySelector("lightning-card").shadowRoot.querySelector('.slds-card__body').children[0].assignedNodes()[4].getElementsByTagName("input");
-    // document.querySelector("c-lwc-login-form").shadowRoot.querySelector("lightning-card").shadowRoot.querySelector('.slds-card__body').children[0].assignedNodes()[4].getElementsByTagName("input");
-    // document.querySelector("c-lwc-login-form").shadowRoot.querySelector("lightning-card").shadowRoot.querySelector('.slds-card__body').children[0].assignedNodes()[4].getElementsByTagName("input");
-    // document.querySelector("c-lwc-login-form").shadowRoot.querySelector("lightning-card").shadowRoot.querySelector('.slds-card__body').children[0].assignedNodes()[4].getElementsByTagName("input");
-    // document.querySelector("c-lwc-login-form").shadowRoot.querySelector("lightning-card").shadowRoot.querySelector('.slds-card__body').children[0].assignedNodes()[4].getElementsByTagName("input");
-    // document.querySelector("c-lwc-login-form").shadowRoot.querySelector("lightning-card").shadowRoot.querySelector('.slds-card__body').children[0].assignedNodes()[4].getElementsByTagName("input");
+    await page.evaluate((username: string, password: string) => {
+      const slot: HTMLSlotElement = document
+        .querySelector('c-lwc-login-form')
+        .shadowRoot.querySelector('lightning-card')
+        .shadowRoot.querySelector('.slds-card__body')
+        .children[0] as HTMLSlotElement;
 
+      const inputCard: HTMLElement = slot.assignedNodes()[4] as HTMLElement;
 
-    await page.type(economist_login_input_name, this.loginInfo.username);
-    await page.type(economist_login_input_password, this.loginInfo.password);
+      const userNamelightningInput: Element = 
+        inputCard
+          .children[1]
+          .children[1];
+      const userNameInput: HTMLInputElement = userNamelightningInput.shadowRoot.querySelector('input');
+      userNameInput.value = username;
 
-    const button = await page.$(economist_submit_button);
-    await button.click();
+      const passwordLightningInput =
+        inputCard
+          .children[2]
+          .children[0]
+          .children[1];
+      const passwordInput: HTMLInputElement = passwordLightningInput.shadowRoot.querySelector('input');
+      passwordInput.value = password;
+
+      const loginLightningInput =
+        inputCard
+          .children[4]
+          .children[0] as HTMLElement;
+        
+      loginLightningInput.click();      
+    }, this.loginInfo.username, this.loginInfo.password);
     
+    await page.screenshot({
+      path: SCREENSHOT_DIR + 'economist_' + 'login_after_type' + '.png',
+    }); 
 
     await page.waitForNavigation();
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    await page.screenshot({path: SCREENSHOT_DIR + "economist_waitForNav.png"});
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await page.screenshot({
+      path: SCREENSHOT_DIR + 'economist_waitForNav.png',
+    });
     return this.checkLogin();
   }
 
@@ -107,8 +126,8 @@ export class EconomistService implements Realm, ArticleScraper, LoginFlow
       await this.visitHomepage();
       returnToUrl = true;
     }
-   
-    const reader = await this.page.evaluate(() => 
+
+    const reader = await this.page.evaluate(() =>
       this.getReader((window as EconomistWindow).tedl)
     );
 
@@ -122,6 +141,7 @@ export class EconomistService implements Realm, ArticleScraper, LoginFlow
     if (!articleUrl.includes(this.getBaseUrl())) {
       return undefined;
     }
+    console.log(articleUrl);
 
     await this.page.goto(articleUrl);
 
@@ -131,22 +151,19 @@ export class EconomistService implements Realm, ArticleScraper, LoginFlow
     const article = new Readability(document.window.document).parse();
     console.log(article.title);
 
-    let asd: Node;
-    asd.getRootNode
-
     return article;
   }
 
   private getReader(tedl: TEDL): Reader {
-    const loggedIn: boolean = tedl.user.status === "logged-in";
+    const loggedIn: boolean = tedl.user !== undefined && tedl.user.status === 'logged-in';
     let activeSubscription = false;
     if (loggedIn === true) {
-      activeSubscription = tedl.user.IsSubscriber === true
-                        && tedl.user.account_type === "paid"                              
-                        && tedl.user.isLapsed === false;
+      activeSubscription =
+        tedl.user.IsSubscriber === true &&
+        tedl.user.account_type === 'paid' &&
+        tedl.user.isLapsed === false;
     }
 
-    return { loggedIn, activeSubscription};
+    return { loggedIn, activeSubscription };
   }
-  
 }
