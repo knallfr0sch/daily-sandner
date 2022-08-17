@@ -1,0 +1,61 @@
+export type NytimesWindow = Window &
+  typeof globalThis & { dataLayer: NYTimesData[]};
+
+
+export type NYTimesSubscriptionDetail = {
+  billingSource: string,
+  bundleType: NYTimesBundleType,
+  campaignId: string,
+  entitlements: string[],
+  hasActiveEntitlements: boolean,
+  ownershipStatus: 'OWNED',
+  promotionTierType: string,
+  startDate: string,
+  status: NYTimesSubscriptionStatus,
+  subscriptionId: number,
+  subscriptionName: 'Basic Digital Access',
+  subscriptionProducts: string[]
+}
+
+export function isPageData(data: NYTimesData): boolean {
+  return Object.prototype.hasOwnProperty.call(data, 'event') 
+      && (data as {event: string}).event === "pageDataReady";
+}
+
+export type PageData = {
+  event: "pageDataReady";
+  session: NYTimesSession;
+  user: NYTimesUser;
+}
+
+export type NYTimesSession = { isLoggedIn: boolean };
+
+export type NYTimesData = PageData | unknown;
+export type NYTimesUserType = 'anon' | 'regi' |'sub';
+export type NYTimesBundleType = 'XPASS' | string;
+export type NYTimesSubscriptionStatus = 'ACTIVE' | string;
+
+export type NYTimesUser = {
+  type: NYTimesUserType,
+  regiId: number,
+  watSegs: string,
+  nytdOtherData: unknown,
+  subInfo: {
+    subscriptions: NYTimesSubscriptionDetail[]
+  },
+  subscriptions: {
+    activeBundles: [
+      'Bundle XPASS'
+    ],
+    subscriberType: 'Regular',
+    activeSubscriberSince: number,
+    isNewsSubscriber: 1
+  },
+  tracking: unknown,
+  subscriberInfo: unknown,
+  actioniq: unknown,
+  adv_scores: unknown,
+  adv_segments: unknown
+}
+
+  

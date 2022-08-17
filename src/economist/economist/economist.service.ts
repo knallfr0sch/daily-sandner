@@ -1,9 +1,9 @@
 import { Readability } from '@mozilla/readability';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JSDOM } from 'jsdom';
 import { Page } from 'puppeteer-core';
-import { SCREENSHOT_DIR } from 'src/app.module';
+import { EXTENSION_PNG, SCREENSHOT_DIR } from 'src/app.module';
 import { ReadabilityArticle } from 'src/domain/article';
 import { ArticleScraper } from 'src/domain/article-scraper';
 import { LoginFlow } from 'src/domain/login-flow';
@@ -12,7 +12,6 @@ import { Realm } from 'src/domain/realm';
 import { UsernamePasswordLogin } from 'src/domain/usernamePasswordLogin';
 import { PuppeteerService } from 'src/puppeteer/puppeteer/puppeteer.service';
 import { HTTPS_PREFIX } from 'src/util/https-prefix';
-import { nodeChildren } from 'src/util/node-children';
 import { EconomistWindow, TEDL } from '../types';
 
 // LOGIN FORM
@@ -23,7 +22,7 @@ const ECONOMIST_USER_NAME_KEY = 'ECONOMIST_USER_NAME';
 const ECONOMIST_USER_PASSWORD_KEY = 'ECONOMIST_USER_PASSWORD';
 
 @Injectable()
-export class EconomistService implements Realm, ArticleScraper, LoginFlow {
+export class EconomistService implements OnModuleInit, Realm, ArticleScraper, LoginFlow {
   private page: Page;
   private loginInfo: UsernamePasswordLogin = { username: '', password: '' };
 
@@ -33,16 +32,16 @@ export class EconomistService implements Realm, ArticleScraper, LoginFlow {
   ) {}
 
   async onModuleInit() {
-    this.loginInfo.username = this.configService.get<string>(ECONOMIST_USER_NAME_KEY);
-    this.loginInfo.password = this.configService.get<string>(ECONOMIST_USER_PASSWORD_KEY);
+    // this.loginInfo.username = this.configService.get<string>(ECONOMIST_USER_NAME_KEY);
+    // this.loginInfo.password = this.configService.get<string>(ECONOMIST_USER_PASSWORD_KEY);
 
-    this.page = await this.puppeteerService.getNewPage();
-    this.page.exposeFunction('nodeChildren', nodeChildren);
+    // this.page = await this.puppeteerService.getNewPage();
+    // this.page.exposeFunction('nodeChildren', nodeChildren);
 
-    await this.visitHomepage();
-    const exampleArticle =
-      'https://www.economist.com/business/2022/08/15/republicans-are-falling-out-of-love-with-america-inc';
-    await this.processArticle(exampleArticle);
+    // await this.visitHomepage();
+    // const exampleArticle =
+    //   'https://www.economist.com/business/2022/08/15/republicans-are-falling-out-of-love-with-america-inc';
+    // await this.processArticle(exampleArticle);
   }
 
   getBaseUrl(): string {
@@ -70,10 +69,12 @@ export class EconomistService implements Realm, ArticleScraper, LoginFlow {
 
     await page.goto(economist_login_url);
     await page.screenshot({
-      path: SCREENSHOT_DIR + 'economist_' + 'login' + '.png',
+      path: SCREENSHOT_DIR + 'economist_' + 'login' + EXTENSION_PNG,
     });
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Holy fuck this is dirty.
 
     await page.evaluate((username: string, password: string) => {
       const slot: HTMLSlotElement = document
@@ -108,7 +109,7 @@ export class EconomistService implements Realm, ArticleScraper, LoginFlow {
     }, this.loginInfo.username, this.loginInfo.password);
     
     await page.screenshot({
-      path: SCREENSHOT_DIR + 'economist_' + 'login_after_type' + '.png',
+      path: SCREENSHOT_DIR + 'economist_' + 'login_after_type' + EXTENSION_PNG,
     }); 
 
     await page.waitForNavigation();

@@ -3,7 +3,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JSDOM } from 'jsdom';
 import { Page } from 'puppeteer-core';
-import { SCREENSHOT_DIR } from 'src/app.module';
+import { EXTENSION_PNG, SCREENSHOT_DIR } from 'src/app.module';
 import { ReadabilityArticle } from 'src/domain/article';
 import { ArticleScraper } from 'src/domain/article-scraper';
 import { LoginFlow } from 'src/domain/login-flow';
@@ -47,8 +47,8 @@ export class SponService
   ) {}
 
   async onModuleInit() {
-    // this.loginInfo.username = this.configService.get<string>(SPON_USER_NAME_KEY);
-    // this.loginInfo.password = this.configService.get<string>(SPON_USER_PASSWORD_KEY);
+    this.loginInfo.username = this.configService.get<string>(SPON_USER_NAME_KEY);
+    this.loginInfo.password = this.configService.get<string>(SPON_USER_PASSWORD_KEY);
 
     // this.page = await this.puppeteerService.getNewPage();
 
@@ -75,7 +75,7 @@ export class SponService
       await this.login();
       await page.goto(SPON_URL);
     }
-    await page.screenshot({ path: SCREENSHOT_DIR + SPON_FILENAME });
+    await page.screenshot({ path: SCREENSHOT_DIR + this.getBaseUrl() + EXTENSION_PNG });
   }
 
   /**
@@ -85,7 +85,7 @@ export class SponService
     const page = this.page;
 
     await page.goto(spon_login_url);
-    await page.screenshot({ path: SCREENSHOT_DIR + 'spiegel_login.png' });
+    await page.screenshot({ path: SCREENSHOT_DIR + 'spiegel_login' + EXTENSION_PNG });
     await page.type(spon_login_input_name, this.loginInfo.username);
     await page.type(spon_login_input_password, this.loginInfo.password);
 
@@ -101,7 +101,7 @@ export class SponService
 
     await page.waitForNavigation();
     await new Promise((resolve) => setTimeout(resolve, 3000));
-    await page.screenshot({ path: SCREENSHOT_DIR + 'spiegel_waitForNav.png' });
+    await page.screenshot({ path: SCREENSHOT_DIR + 'spiegel_waitForNav' + EXTENSION_PNG });
     return this.checkLogin();
   }
 
