@@ -20,15 +20,14 @@ import {
 
 // SPON
 const SPON_URL = 'https://www.spiegel.de/';
-const SPON_FILENAME = 'spiegel.png';
 
 // LOGIN FORM
-const spon_login_url =
+const SPON_LOGIN_URL =
   'https://gruppenkonto.spiegel.de/authenticate?requestAccessToken=true&targetUrl=https%3A%2F%2Fwww.spiegel.de%2Ffuermich%2F';
-const spon_login_input_name = '#loginname';
-const spon_login_input_password = '#password';
-const spon_remember_checkbox = 'loginAutologin_input';
-const spon_submit_button = '#submit';
+const SPON_LOGIN_INPUT_NAME = '#loginname';
+const SPON_LOGIN_INPUT_PASSWORD = '#password';
+const SPON_REMEMBER_CHECKBOX = 'loginAutologin_input';
+const SPON_SUBMIT_BUTTON = '#submit';
 
 // CREDENTIALS
 const SPON_USER_NAME_KEY = 'SPON_USER_NAME';
@@ -84,19 +83,19 @@ export class SponService
   async login(): Promise<Reader> {
     const page = this.page;
 
-    await page.goto(spon_login_url);
+    await page.goto(SPON_LOGIN_URL);
     await page.screenshot({ path: SCREENSHOT_DIR + 'spiegel_login' + EXTENSION_PNG });
-    await page.type(spon_login_input_name, this.loginInfo.username);
-    await page.type(spon_login_input_password, this.loginInfo.password);
+    await page.type(SPON_LOGIN_INPUT_NAME, this.loginInfo.username);
+    await page.type(SPON_LOGIN_INPUT_PASSWORD, this.loginInfo.password);
 
     await page.evaluate((spon_remember_checkbox: string) => {
       const rememberMeCheckbox: HTMLInputElement = <HTMLInputElement>(
         document.getElementById(spon_remember_checkbox)
       );
       rememberMeCheckbox.checked = true;
-    }, spon_remember_checkbox);
+    }, SPON_REMEMBER_CHECKBOX);
 
-    const button = await page.$(spon_submit_button);
+    const button = await page.$(SPON_SUBMIT_BUTTON);
     await button.click();
 
     await page.waitForNavigation();

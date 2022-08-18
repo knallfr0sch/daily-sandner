@@ -37,4 +37,5 @@ lerna-debug.log*
 # Project-specific
 /screenshots
 /user-data
+/scraper-results
 .env

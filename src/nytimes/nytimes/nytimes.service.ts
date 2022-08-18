@@ -106,12 +106,8 @@ export class NytimesService implements OnModuleInit, Realm, ArticleScraper, Logi
   private getReader(dataLayer: NYTimesData[]): Reader {
     const pageData = dataLayer.find((data): data is PageData => isPageData(data));
 
-    console.log(pageData);
-    console.log(pageData.session)
-
     const loggedIn: boolean = pageData.session?.isLoggedIn === true;
     let activeSubscription = false;
-    console.log("hello");
     if (loggedIn === true) {
       activeSubscription = pageData.user.type === 'sub'
                         && pageData.user.subInfo.subscriptions
