@@ -35,7 +35,7 @@ const SPON_USER_PASSWORD_KEY = 'SPON_USER_PASSWORD';
 
 @Injectable()
 export class SponService
-  implements LoginFlow, Realm, ArticleScraper, OnModuleInit
+implements LoginFlow, Realm, ArticleScraper, OnModuleInit
 {
   private page: Page;
   private loginInfo: UsernamePasswordLogin = { username: '', password: '' };

@@ -5,7 +5,12 @@ import { NytimesModule } from 'src/nytimes/nytimes.module';
 import { DiscoveryService } from './discovery/discovery.service';
 
 @Module({
-  imports: [NewsApiModule, NytimesModule, EconomistModule],
-  providers: [DiscoveryService],
+  imports: [
+    NewsApiModule,
+    NytimesModule,
+    EconomistModule],
+  providers: [
+    DiscoveryService
+  ],
 })
 export class DiscoveryModule {}

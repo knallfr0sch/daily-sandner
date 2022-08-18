@@ -20,7 +20,8 @@ const NYTIMES_API_TOKEN = 'NYTIMES_API_TOKEN';
       inject: [ConfigService],
     }),
   ],
-  providers: [NytimesService, NytimesApiService],
+  providers: [NytimesService,
+    NytimesApiService],
   exports: [NytimesApiService],
 })
 export class NytimesModule {}

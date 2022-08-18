@@ -5,7 +5,8 @@ import { EconomistService } from './economist/economist.service';
 
 @Module({
   imports: [PuppeteerModule],
-  providers: [EconomistService, EconomistHttpService],
+  providers: [EconomistService,
+    EconomistHttpService],
   exports: [EconomistHttpService],
 })
 export class EconomistModule {}

@@ -23,7 +23,7 @@ const ECONOMIST_USER_PASSWORD_KEY = 'ECONOMIST_USER_PASSWORD';
 
 @Injectable()
 export class EconomistService
-  implements OnModuleInit, Realm, ArticleScraper, LoginFlow
+implements OnModuleInit, Realm, ArticleScraper, LoginFlow
 {
   private page: Page;
   private loginInfo: UsernamePasswordLogin = { username: '', password: '' };

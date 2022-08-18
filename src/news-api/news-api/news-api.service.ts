@@ -25,6 +25,7 @@ export class NewsApiService implements Discovery, OnModuleInit {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const titles: string[] = headlines.articles.map(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (article: any) => article.title
     );
 
