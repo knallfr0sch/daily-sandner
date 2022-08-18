@@ -7,6 +7,8 @@ import { NytimesModule } from './nytimes/nytimes.module';
 import { PuppeteerModule } from './puppeteer/puppeteer.module';
 import { SponModule } from './spon/spon.module';
 import { ForeignAffairsModule } from './foreign-affairs/foreign-affairs.module';
+import { DiscoveryModule } from './discovery/discovery.module';
+import { NewsApiModule } from './news-api/news-api.module';
 
 // General Variables
 export const SCREENSHOT_DIR = 'screenshots/';
@@ -20,6 +22,8 @@ export const EXTENSION_PNG = '.png';
     EconomistModule,
     NytimesModule,
     ForeignAffairsModule,
+    DiscoveryModule,
+    NewsApiModule,
   ],
   controllers: [
     AppController

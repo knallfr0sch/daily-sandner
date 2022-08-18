@@ -4,8 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { JSDOM } from 'jsdom';
 import { Page } from 'puppeteer-core';
 import { EXTENSION_PNG, SCREENSHOT_DIR } from 'src/app.module';
-import { ReadabilityArticle } from 'src/domain/article';
 import { LoginFlow } from 'src/domain/login-flow';
+import { ReadabilityArticle } from 'src/domain/readability-article';
 import { Reader } from 'src/domain/reader';
 import { Realm } from 'src/domain/realm';
 import { UsernamePasswordLogin } from 'src/domain/usernamePasswordLogin';
@@ -42,15 +42,15 @@ export class ForeignAffairsService implements LoginFlow, Realm, OnModuleInit {
   }
 
   async onModuleInit() {
-    this.loginInfo.username = this.configService.get<string>(FOREIGN_AFFAIRS_USER_NAME_KEY);
-    this.loginInfo.password = this.configService.get<string>(FOREIGN_AFFAIRS_USER_PASSWORD_KEY);
+    // this.loginInfo.username = this.configService.get<string>(FOREIGN_AFFAIRS_USER_NAME_KEY);
+    // this.loginInfo.password = this.configService.get<string>(FOREIGN_AFFAIRS_USER_PASSWORD_KEY);
 
-    this.page = await this.puppeteerService.getNewPage();
+    // this.page = await this.puppeteerService.getNewPage();
 
-    await this.visitHomepage();
-    const exampleArticle =
-      'https://www.foreignaffairs.com/ukraine/playing-fire-ukraine';
-    await this.processArticle(exampleArticle);
+    // await this.visitHomepage();
+    // const exampleArticle =
+    //   'https://www.foreignaffairs.com/ukraine/playing-fire-ukraine';
+    // await this.processArticle(exampleArticle);
   }
 
   /**

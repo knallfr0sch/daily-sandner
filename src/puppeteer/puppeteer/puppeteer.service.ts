@@ -12,7 +12,7 @@ export class PuppeteerService implements OnModuleInit {
   private isInitializing = false;
 
   async onModuleInit(): Promise<void> {
-    await this.initializeBrowser();
+    // await this.initializeBrowser();
   }
 
   async initializeBrowser(): Promise<void> {
