@@ -15,7 +15,7 @@ import {
   isSponLoginInfo,
   SARA_DATA,
   SpiegelWindow,
-  SponLoginInfo
+  SponLoginInfo,
 } from '../types';
 
 // SPON
@@ -46,8 +46,11 @@ export class SponService
   ) {}
 
   async onModuleInit() {
-    this.loginInfo.username = this.configService.get<string>(SPON_USER_NAME_KEY);
-    this.loginInfo.password = this.configService.get<string>(SPON_USER_PASSWORD_KEY);
+    this.loginInfo.username =
+      this.configService.get<string>(SPON_USER_NAME_KEY);
+    this.loginInfo.password = this.configService.get<string>(
+      SPON_USER_PASSWORD_KEY
+    );
 
     // this.page = await this.puppeteerService.getNewPage();
 
@@ -74,7 +77,9 @@ export class SponService
       await this.login();
       await page.goto(SPON_URL);
     }
-    await page.screenshot({ path: SCREENSHOT_DIR + this.getBaseUrl() + EXTENSION_PNG });
+    await page.screenshot({
+      path: SCREENSHOT_DIR + this.getBaseUrl() + EXTENSION_PNG,
+    });
   }
 
   /**
@@ -84,7 +89,9 @@ export class SponService
     const page = this.page;
 
     await page.goto(SPON_LOGIN_URL);
-    await page.screenshot({ path: SCREENSHOT_DIR + 'spiegel_login' + EXTENSION_PNG });
+    await page.screenshot({
+      path: SCREENSHOT_DIR + 'spiegel_login' + EXTENSION_PNG,
+    });
     await page.type(SPON_LOGIN_INPUT_NAME, this.loginInfo.username);
     await page.type(SPON_LOGIN_INPUT_PASSWORD, this.loginInfo.password);
 
@@ -99,8 +106,10 @@ export class SponService
     await button.click();
 
     await page.waitForNavigation();
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    await page.screenshot({ path: SCREENSHOT_DIR + 'spiegel_waitForNav' + EXTENSION_PNG });
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    await page.screenshot({
+      path: SCREENSHOT_DIR + 'spiegel_waitForNav' + EXTENSION_PNG,
+    });
     return this.checkLogin();
   }
 
@@ -140,7 +149,7 @@ export class SponService
   }
 
   private getReader(sara_data: SARA_DATA[]): Reader {
-    const saraLoginInfo: SponLoginInfo = sara_data.find((data) =>
+    const saraLoginInfo: SponLoginInfo = sara_data.find(data =>
       isSponLoginInfo(data)
     ) as SponLoginInfo;
     return {

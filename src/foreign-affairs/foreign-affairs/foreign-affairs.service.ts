@@ -11,14 +11,19 @@ import { Realm } from 'src/domain/realm';
 import { UsernamePasswordLogin } from 'src/domain/usernamePasswordLogin';
 import { PuppeteerService } from 'src/puppeteer/puppeteer/puppeteer.service';
 import { HTTPS_PREFIX } from 'src/util/https-prefix';
-import { ForeignAffairsData, ForeignAffairsUser, ForeignAffairsWindow, isDataForeignAffairsUser } from '../types';
+import {
+  ForeignAffairsData,
+  ForeignAffairsUser,
+  ForeignAffairsWindow,
+  isDataForeignAffairsUser,
+} from '../types';
 
 // CREDENTIALS
 const FOREIGN_AFFAIRS_USER_NAME_KEY = 'FOREIGN_AFFAIRS_USER_NAME';
 const FOREIGN_AFFAIRS_USER_PASSWORD_KEY = 'FOREIGN_AFFAIRS_USER_PASSWORD';
 
 // LOGIN FORM
-const FOREIGN_AFFAIRS_LOGIN_URL ='https://www.foreignaffairs.com/user/login';
+const FOREIGN_AFFAIRS_LOGIN_URL = 'https://www.foreignaffairs.com/user/login';
 const FOREIGN_AFFAIRS_LOGIN_INPUT_NAME = '#edit-name';
 const FOREIGN_AFFAIRS_LOGIN_INPUT_PASSWORD = '#edit-pass';
 const FOREIGN_AFFAIRS_SUBMIT_BUTTON = '#edit-submit';
@@ -31,22 +36,20 @@ export class ForeignAffairsService implements LoginFlow, Realm, OnModuleInit {
   constructor(
     private puppeteerService: PuppeteerService,
     private configService: ConfigService
-  ) { }
+  ) {}
 
   getBaseUrl(): string {
-      return 'foreignaffairs.com';
+    return 'foreignaffairs.com';
   }
 
   getHomePage(): string {
-    return `${HTTPS_PREFIX}${this.getBaseUrl()}`
+    return `${HTTPS_PREFIX}${this.getBaseUrl()}`;
   }
 
   async onModuleInit() {
     // this.loginInfo.username = this.configService.get<string>(FOREIGN_AFFAIRS_USER_NAME_KEY);
     // this.loginInfo.password = this.configService.get<string>(FOREIGN_AFFAIRS_USER_PASSWORD_KEY);
-
     // this.page = await this.puppeteerService.getNewPage();
-
     // await this.visitHomepage();
     // const exampleArticle =
     //   'https://www.foreignaffairs.com/ukraine/playing-fire-ukraine';
@@ -56,7 +59,7 @@ export class ForeignAffairsService implements LoginFlow, Realm, OnModuleInit {
   /**
    * Visits Foreign Affairs
    */
-   async visitHomepage(): Promise<void> {
+  async visitHomepage(): Promise<void> {
     const page = this.page;
     await page.goto(this.getHomePage());
     await this.page.exposeFunction('getReader', this.getReader);
@@ -66,24 +69,32 @@ export class ForeignAffairsService implements LoginFlow, Realm, OnModuleInit {
       await this.login();
       await page.goto(this.getHomePage());
     }
-    await page.screenshot({ path: SCREENSHOT_DIR + this.getBaseUrl() + EXTENSION_PNG });
+    await page.screenshot({
+      path: SCREENSHOT_DIR + this.getBaseUrl() + EXTENSION_PNG,
+    });
   }
 
   async login(): Promise<Reader> {
     const page = this.page;
 
     await page.goto(FOREIGN_AFFAIRS_LOGIN_URL);
-    await page.screenshot({ path: SCREENSHOT_DIR + 'foreign_affairs_login' + EXTENSION_PNG });
+    await page.screenshot({
+      path: SCREENSHOT_DIR + 'foreign_affairs_login' + EXTENSION_PNG,
+    });
     await page.type(FOREIGN_AFFAIRS_LOGIN_INPUT_NAME, this.loginInfo.username);
-    await page.type(FOREIGN_AFFAIRS_LOGIN_INPUT_PASSWORD, this.loginInfo.password);
-
+    await page.type(
+      FOREIGN_AFFAIRS_LOGIN_INPUT_PASSWORD,
+      this.loginInfo.password
+    );
 
     const button = await page.$(FOREIGN_AFFAIRS_SUBMIT_BUTTON);
     await button.click();
 
     await page.waitForNavigation();
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    await page.screenshot({ path: SCREENSHOT_DIR + 'foreign_affairs_waitForNav' + EXTENSION_PNG });
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    await page.screenshot({
+      path: SCREENSHOT_DIR + 'foreign_affairs_waitForNav' + EXTENSION_PNG,
+    });
     return this.checkLogin();
   }
 
@@ -95,8 +106,8 @@ export class ForeignAffairsService implements LoginFlow, Realm, OnModuleInit {
       returnToUrl = true;
     }
 
-    const dataLayer: ForeignAffairsData[] = await this.page.evaluate(() =>
-      (window as ForeignAffairsWindow).dataLayer
+    const dataLayer: ForeignAffairsData[] = await this.page.evaluate(
+      () => (window as ForeignAffairsWindow).dataLayer
     );
 
     const reader = this.getReader(dataLayer);
@@ -122,20 +133,19 @@ export class ForeignAffairsService implements LoginFlow, Realm, OnModuleInit {
   }
 
   private getReader(foreignAffairsData: ForeignAffairsData[]): Reader {
-    const foreignAffairsUser: ForeignAffairsUser = foreignAffairsData.find((data) =>
-      isDataForeignAffairsUser(data)
+    const foreignAffairsUser: ForeignAffairsUser = foreignAffairsData.find(
+      data => isDataForeignAffairsUser(data)
     ) as ForeignAffairsUser;
 
     const userType = foreignAffairsUser['user type'];
 
-    const loggedIn: boolean = userType !== undefined
-                           && userType !== 'anonymous';
+    const loggedIn: boolean =
+      userType !== undefined && userType !== 'anonymous';
     let activeSubscription = false;
     if (loggedIn === true) {
       activeSubscription = userType === 'plus_subscriber_user';
     }
-    
-    return {loggedIn, activeSubscription};
-  }
 
+    return { loggedIn, activeSubscription };
+  }
 }

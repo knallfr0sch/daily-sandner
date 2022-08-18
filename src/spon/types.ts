@@ -4,10 +4,12 @@ export type SpiegelWindow = Window &
 export type SARA_DATA = SponLoginInfo | SponPageEvent;
 
 export function isSponLoginInfo(
-  sara_data: SARA_DATA,
+  sara_data: SARA_DATA
 ): sara_data is SponLoginInfo {
-  return Object.prototype.hasOwnProperty.call(sara_data, 'page') 
-      && Object.prototype.hasOwnProperty.call(sara_data, 'user');
+  return (
+    Object.prototype.hasOwnProperty.call(sara_data, 'page') &&
+    Object.prototype.hasOwnProperty.call(sara_data, 'user')
+  );
 }
 
 export type SponPageEvent = {

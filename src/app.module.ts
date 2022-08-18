@@ -25,11 +25,7 @@ export const EXTENSION_PNG = '.png';
     DiscoveryModule,
     NewsApiModule,
   ],
-  controllers: [
-    AppController
-  ],
-  providers: [
-    AppService
-  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

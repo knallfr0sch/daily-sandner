@@ -5,15 +5,13 @@ import { NytimesApiService } from 'src/nytimes/nytimes-api/nytimes-api.service';
 
 @Injectable()
 export class DiscoveryService implements OnModuleInit {
-  private logger = new Logger(NewsApiService.name)
-  
+  private logger = new Logger(NewsApiService.name);
+
   constructor(
     private newsApiService: NewsApiService,
     private nytimesApiService: NytimesApiService,
-    private economistHttpService: EconomistHttpService,
-  ) {
-
-  }
+    private economistHttpService: EconomistHttpService
+  ) {}
 
   // Ugly hack, module initiation.
   onModuleInit() {
@@ -22,16 +20,15 @@ export class DiscoveryService implements OnModuleInit {
 
   async discoverArticles(): Promise<void> {
     const newsApiTitles: string[] = await this.newsApiService.discover();
-    this.logger.log("newsapi");
+    this.logger.log('newsapi');
     this.logger.log(newsApiTitles);
-    
+
     const nytimesTitles: string[] = await this.nytimesApiService.discover();
-    this.logger.log("nytimes");
+    this.logger.log('nytimes');
     this.logger.log(nytimesTitles);
 
     const economistLinks: string[] = await this.economistHttpService.discover();
-    this.logger.log("economist");
+    this.logger.log('economist');
     this.logger.log(economistLinks);
   }
-
 }

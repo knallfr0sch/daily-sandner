@@ -1,4 +1,3 @@
-export interface Discovery
-{
+export interface Discovery {
   discover(): Promise<string[]>;
 }

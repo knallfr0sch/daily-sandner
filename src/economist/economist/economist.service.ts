@@ -22,7 +22,9 @@ const ECONOMIST_USER_NAME_KEY = 'ECONOMIST_USER_NAME';
 const ECONOMIST_USER_PASSWORD_KEY = 'ECONOMIST_USER_PASSWORD';
 
 @Injectable()
-export class EconomistService implements OnModuleInit, Realm, ArticleScraper, LoginFlow {
+export class EconomistService
+  implements OnModuleInit, Realm, ArticleScraper, LoginFlow
+{
   private page: Page;
   private loginInfo: UsernamePasswordLogin = { username: '', password: '' };
 
@@ -34,10 +36,8 @@ export class EconomistService implements OnModuleInit, Realm, ArticleScraper, Lo
   async onModuleInit() {
     // this.loginInfo.username = this.configService.get<string>(ECONOMIST_USER_NAME_KEY);
     // this.loginInfo.password = this.configService.get<string>(ECONOMIST_USER_PASSWORD_KEY);
-
     // this.page = await this.puppeteerService.getNewPage();
     // this.page.exposeFunction('nodeChildren', nodeChildren);
-
     // await this.visitHomepage();
     // const exampleArticle =
     //   'https://www.economist.com/business/2022/08/15/republicans-are-falling-out-of-love-with-america-inc';
@@ -58,7 +58,9 @@ export class EconomistService implements OnModuleInit, Realm, ArticleScraper, Lo
       await this.login();
       await page.goto(`${HTTPS_PREFIX}${this.getBaseUrl()}`);
     }
-    await page.screenshot({ path: SCREENSHOT_DIR + this.getBaseUrl() + ".png" });
+    await page.screenshot({
+      path: SCREENSHOT_DIR + this.getBaseUrl() + '.png',
+    });
   }
 
   /**
@@ -72,48 +74,47 @@ export class EconomistService implements OnModuleInit, Realm, ArticleScraper, Lo
       path: SCREENSHOT_DIR + 'economist_' + 'login' + EXTENSION_PNG,
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Holy fuck this is dirty.
 
-    await page.evaluate((username: string, password: string) => {
-      const slot: HTMLSlotElement = document
-        .querySelector('c-lwc-login-form')
-        .shadowRoot.querySelector('lightning-card')
-        .shadowRoot.querySelector('.slds-card__body')
-        .children[0] as HTMLSlotElement;
+    await page.evaluate(
+      (username: string, password: string) => {
+        const slot: HTMLSlotElement = document
+          .querySelector('c-lwc-login-form')
+          .shadowRoot.querySelector('lightning-card')
+          .shadowRoot.querySelector('.slds-card__body')
+          .children[0] as HTMLSlotElement;
 
-      const inputCard: HTMLElement = slot.assignedNodes()[4] as HTMLElement;
+        const inputCard: HTMLElement = slot.assignedNodes()[4] as HTMLElement;
 
-      const userNamelightningInput: Element = 
-        inputCard
-          .children[1]
-          .children[1];
-      const userNameInput: HTMLInputElement = userNamelightningInput.shadowRoot.querySelector('input');
-      userNameInput.value = username;
+        const userNamelightningInput: Element =
+          inputCard.children[1].children[1];
+        const userNameInput: HTMLInputElement =
+          userNamelightningInput.shadowRoot.querySelector('input');
+        userNameInput.value = username;
 
-      const passwordLightningInput =
-        inputCard
-          .children[2]
-          .children[0]
-          .children[1];
-      const passwordInput: HTMLInputElement = passwordLightningInput.shadowRoot.querySelector('input');
-      passwordInput.value = password;
+        const passwordLightningInput =
+          inputCard.children[2].children[0].children[1];
+        const passwordInput: HTMLInputElement =
+          passwordLightningInput.shadowRoot.querySelector('input');
+        passwordInput.value = password;
 
-      const loginLightningInput =
-        inputCard
-          .children[4]
+        const loginLightningInput = inputCard.children[4]
           .children[0] as HTMLElement;
-        
-      loginLightningInput.click();      
-    }, this.loginInfo.username, this.loginInfo.password);
-    
+
+        loginLightningInput.click();
+      },
+      this.loginInfo.username,
+      this.loginInfo.password
+    );
+
     await page.screenshot({
       path: SCREENSHOT_DIR + 'economist_' + 'login_after_type' + EXTENSION_PNG,
-    }); 
+    });
 
     await page.waitForNavigation();
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await new Promise(resolve => setTimeout(resolve, 3000));
     await page.screenshot({
       path: SCREENSHOT_DIR + 'economist_waitForNav.png',
     });
@@ -156,7 +157,8 @@ export class EconomistService implements OnModuleInit, Realm, ArticleScraper, Lo
   }
 
   private getReader(tedl: TEDL): Reader {
-    const loggedIn: boolean = tedl.user !== undefined && tedl.user.status === 'logged-in';
+    const loggedIn: boolean =
+      tedl.user !== undefined && tedl.user.status === 'logged-in';
     let activeSubscription = false;
     if (loggedIn === true) {
       activeSubscription =

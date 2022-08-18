@@ -14,18 +14,13 @@ const NYTIMES_API_TOKEN = 'NYTIMES_API_TOKEN';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         params: {
-          "api-key": configService.get(NYTIMES_API_TOKEN)
-        }
+          'api-key': configService.get(NYTIMES_API_TOKEN),
+        },
       }),
       inject: [ConfigService],
-    })
+    }),
   ],
-  providers: [
-    NytimesService,
-    NytimesApiService, 
-  ],
-  exports: [
-    NytimesApiService
-  ]
+  providers: [NytimesService, NytimesApiService],
+  exports: [NytimesApiService],
 })
 export class NytimesModule {}
