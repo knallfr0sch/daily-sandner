@@ -1,11 +1,11 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { FetchableArticle } from 'src/domain/fetchable-article';
 import { EconomistHttpService } from 'src/economist/economist/economist-http.service';
 import { NewsApiService } from 'src/news-api/news-api/news-api.service';
 import { NytimesApiService } from 'src/nytimes/nytimes-api/nytimes-api.service';
 
 @Injectable()
-export class DiscoveryService implements OnModuleInit 
+export class DiscoveryService
 {
   private logger = new Logger(NewsApiService.name);
 
@@ -15,24 +15,22 @@ export class DiscoveryService implements OnModuleInit
     private economistHttpService: EconomistHttpService
   ) {}
 
-  // Ugly hack, module initiation.
-  onModuleInit() 
+  async discoverArticles(): Promise<FetchableArticle[]> 
   {
-    setTimeout(() => this.discoverArticles(), 3000);
-  }
+    const articles: FetchableArticle[] = [];
 
-  async discoverArticles(): Promise<void> 
-  {
     const newsApiArticles: FetchableArticle[] = await this.newsApiService.discover();
-    this.logger.log('newsapi');
-    this.logger.log(newsApiArticles.map(article => article.title));
+    articles.push(...newsApiArticles);
+    // this.logger.log(newsApiArticles.map(article => article.title));
 
     const nytimesArticles: FetchableArticle[] = await this.nytimesApiService.discover();
-    this.logger.log('nytimes');
+    articles.push(...nytimesArticles);
     this.logger.log(nytimesArticles.map(article => article.title));
 
     const economistArticles: FetchableArticle[] = await this.economistHttpService.discover();
-    this.logger.log('economist');
+    articles.push(...economistArticles);
     this.logger.log(economistArticles.map(article => article.title));
+
+    return articles;
   }
 }

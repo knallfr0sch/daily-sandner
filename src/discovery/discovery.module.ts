@@ -8,9 +8,13 @@ import { DiscoveryService } from './discovery/discovery.service';
   imports: [
     NewsApiModule,
     NytimesModule,
-    EconomistModule],
+    EconomistModule,
+  ],
   providers: [
     DiscoveryService
   ],
+  exports: [
+    DiscoveryService
+  ]
 })
 export class DiscoveryModule {}

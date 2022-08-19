@@ -6,7 +6,6 @@ import { Page } from 'puppeteer-core';
 import { EXTENSION_PNG, SCREENSHOT_DIR } from 'src/app.module';
 import { ArticleScraper } from 'src/domain/article-scraper';
 import { LoginFlow } from 'src/domain/login-flow';
-import { ReadabilityArticle } from 'src/domain/readability-article';
 import { Reader } from 'src/domain/reader';
 import { Realm } from 'src/domain/realm';
 import { UsernamePasswordLogin } from 'src/domain/usernamePasswordLogin';
@@ -15,7 +14,7 @@ import {
   isSponLoginInfo,
   SARA_DATA,
   SpiegelWindow,
-  SponLoginInfo,
+  SponLoginInfo
 } from '../types';
 
 // SPON
@@ -45,7 +44,8 @@ implements LoginFlow, Realm, ArticleScraper, OnModuleInit
     private configService: ConfigService
   ) {}
 
-  async onModuleInit() {
+  async onModuleInit() 
+  {
     this.loginInfo.username =
       this.configService.get<string>(SPON_USER_NAME_KEY);
     this.loginInfo.password = this.configService.get<string>(
@@ -60,20 +60,23 @@ implements LoginFlow, Realm, ArticleScraper, OnModuleInit
     // await this.processArticle(exampleArticle);
   }
 
-  getBaseUrl(): string {
+  getBaseUrl(): string 
+  {
     return 'spiegel.de';
   }
 
   /**
    * Visits Spiegel Online
    */
-  async visitHomepage(): Promise<void> {
+  async visitHomepage(): Promise<void> 
+  {
     const page = this.page;
     await page.goto(SPON_URL);
     await this.page.exposeFunction('getReader', this.getReader);
 
     const isLoggedIn: boolean = (await this.checkLogin()).loggedIn;
-    if (!isLoggedIn) {
+    if (!isLoggedIn) 
+    {
       await this.login();
       await page.goto(SPON_URL);
     }
@@ -85,7 +88,8 @@ implements LoginFlow, Realm, ArticleScraper, OnModuleInit
   /**
    * Logs into Spiegel Online
    */
-  async login(): Promise<Reader> {
+  async login(): Promise<Reader> 
+  {
     const page = this.page;
 
     await page.goto(SPON_LOGIN_URL);
@@ -95,7 +99,8 @@ implements LoginFlow, Realm, ArticleScraper, OnModuleInit
     await page.type(SPON_LOGIN_INPUT_NAME, this.loginInfo.username);
     await page.type(SPON_LOGIN_INPUT_PASSWORD, this.loginInfo.password);
 
-    await page.evaluate((spon_remember_checkbox: string) => {
+    await page.evaluate((spon_remember_checkbox: string) => 
+    {
       const rememberMeCheckbox: HTMLInputElement = <HTMLInputElement>(
         document.getElementById(spon_remember_checkbox)
       );
@@ -113,27 +118,40 @@ implements LoginFlow, Realm, ArticleScraper, OnModuleInit
     return this.checkLogin();
   }
 
-  /**
-   *
-   */
-  async processArticle(articleUrl: string): Promise<ReadabilityArticle> {
-    if (!articleUrl.includes(this.getBaseUrl())) {
+
+  async processArticle(articleUrl: string): Promise<string>
+  {
+    if (!articleUrl.includes(this.getBaseUrl())) 
+    {
       return undefined;
     }
-    await this.page.goto(articleUrl);
-
-    const htmlArticle = await this.page.content();
-
-    const document = new JSDOM(htmlArticle);
-    const article = new Readability(document.window.document).parse();
-    console.log(article.title);
-    return article;
+    const jsdom = await JSDOM.fromURL(articleUrl);
+    const readability = new Readability(jsdom.window.document).parse();
+    return readability.content;
   }
 
-  async checkLogin(): Promise<Reader> {
+  // async processArticle(articleUrl: string): Promise<ReadabilityArticle> 
+  // {
+  //   if (!articleUrl.includes(this.getBaseUrl())) 
+  //   {
+  //     return undefined;
+  //   }
+  //   await this.page.goto(articleUrl);
+
+  //   const htmlArticle = await this.page.content();
+
+  //   const document = new JSDOM(htmlArticle);
+  //   const article = new Readability(document.window.document).parse();
+  //   console.log(article.title);
+  //   return article;
+  // }
+
+  async checkLogin(): Promise<Reader> 
+  {
     const previousUrl: string = this.page.url();
     let returnToUrl = false;
-    if (!previousUrl.includes(this.getBaseUrl())) {
+    if (!previousUrl.includes(this.getBaseUrl())) 
+    {
       await this.visitHomepage();
       returnToUrl = true;
     }
@@ -142,13 +160,15 @@ implements LoginFlow, Realm, ArticleScraper, OnModuleInit
       this.getReader((window as SpiegelWindow).SARAs_data)
     );
 
-    if (returnToUrl) {
+    if (returnToUrl) 
+    {
       await this.page.goto(previousUrl);
     }
     return reader;
   }
 
-  private getReader(sara_data: SARA_DATA[]): Reader {
+  private getReader(sara_data: SARA_DATA[]): Reader 
+  {
     const saraLoginInfo: SponLoginInfo = sara_data.find(data =>
       isSponLoginInfo(data)
     ) as SponLoginInfo;

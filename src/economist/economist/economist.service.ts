@@ -6,7 +6,6 @@ import { Page } from 'puppeteer-core';
 import { EXTENSION_PNG, SCREENSHOT_DIR } from 'src/app.module';
 import { ArticleScraper } from 'src/domain/article-scraper';
 import { LoginFlow } from 'src/domain/login-flow';
-import { ReadabilityArticle } from 'src/domain/readability-article';
 import { Reader } from 'src/domain/reader';
 import { Realm } from 'src/domain/realm';
 import { UsernamePasswordLogin } from 'src/domain/usernamePasswordLogin';
@@ -18,8 +17,8 @@ import { EconomistWindow, TEDL } from '../types';
 const economist_login_url = 'https://www.economist.com/api/auth/login';
 
 // CREDENTIALS
-const ECONOMIST_USER_NAME_KEY = 'ECONOMIST_USER_NAME';
-const ECONOMIST_USER_PASSWORD_KEY = 'ECONOMIST_USER_PASSWORD';
+// const ECONOMIST_USER_NAME_KEY = 'ECONOMIST_USER_NAME';
+// const ECONOMIST_USER_PASSWORD_KEY = 'ECONOMIST_USER_PASSWORD';
 
 @Injectable()
 export class EconomistService
@@ -33,7 +32,8 @@ implements OnModuleInit, Realm, ArticleScraper, LoginFlow
     private configService: ConfigService
   ) {}
 
-  async onModuleInit() {
+  async onModuleInit() 
+  {
     // this.loginInfo.username = this.configService.get<string>(ECONOMIST_USER_NAME_KEY);
     // this.loginInfo.password = this.configService.get<string>(ECONOMIST_USER_PASSWORD_KEY);
     // this.page = await this.puppeteerService.getNewPage();
@@ -44,17 +44,20 @@ implements OnModuleInit, Realm, ArticleScraper, LoginFlow
     // await this.processArticle(exampleArticle);
   }
 
-  getBaseUrl(): string {
+  getBaseUrl(): string 
+  {
     return 'economist.com';
   }
 
-  async visitHomepage(): Promise<void> {
+  async visitHomepage(): Promise<void> 
+  {
     const page = this.page;
     await page.goto(`${HTTPS_PREFIX}${this.getBaseUrl()}`);
     await this.page.exposeFunction('getReader', this.getReader);
 
     const isLoggedIn: boolean = (await this.checkLogin()).loggedIn;
-    if (!isLoggedIn) {
+    if (!isLoggedIn) 
+    {
       await this.login();
       await page.goto(`${HTTPS_PREFIX}${this.getBaseUrl()}`);
     }
@@ -66,7 +69,8 @@ implements OnModuleInit, Realm, ArticleScraper, LoginFlow
   /**
    * Logs into The Economist
    */
-  async login(): Promise<Reader> {
+  async login(): Promise<Reader> 
+  {
     const page = this.page;
 
     await page.goto(economist_login_url);
@@ -79,7 +83,8 @@ implements OnModuleInit, Realm, ArticleScraper, LoginFlow
     // Holy fuck this is dirty.
 
     await page.evaluate(
-      (username: string, password: string) => {
+      (username: string, password: string) => 
+      {
         const slot: HTMLSlotElement = document
           .querySelector('c-lwc-login-form')
           .shadowRoot.querySelector('lightning-card')
@@ -121,10 +126,12 @@ implements OnModuleInit, Realm, ArticleScraper, LoginFlow
     return this.checkLogin();
   }
 
-  async checkLogin(): Promise<Reader> {
+  async checkLogin(): Promise<Reader> 
+  {
     const previousUrl: string = this.page.url();
     let returnToUrl = false;
-    if (!previousUrl.includes(this.getBaseUrl())) {
+    if (!previousUrl.includes(this.getBaseUrl())) 
+    {
       await this.visitHomepage();
       returnToUrl = true;
     }
@@ -133,34 +140,53 @@ implements OnModuleInit, Realm, ArticleScraper, LoginFlow
       this.getReader((window as EconomistWindow).tedl)
     );
 
-    if (returnToUrl) {
+    if (returnToUrl) 
+    {
       await this.page.goto(previousUrl);
     }
     return reader;
   }
 
-  async processArticle(articleUrl: string): Promise<ReadabilityArticle> {
-    if (!articleUrl.includes(this.getBaseUrl())) {
+  async processArticle(articleUrl: string): Promise<string>
+  {
+    console.log(articleUrl);
+    if (!articleUrl.includes(this.getBaseUrl())) 
+    {
+      console.log("invalid url, aborting");
       return undefined;
     }
-    console.log(articleUrl);
-
-    await this.page.goto(articleUrl);
-
-    const htmlArticle = await this.page.content();
-
-    const document = new JSDOM(htmlArticle);
-    const article = new Readability(document.window.document).parse();
-    console.log(article.title);
-
-    return article;
+    const jsdom = await JSDOM.fromURL(articleUrl);
+    const readability = new Readability(jsdom.window.document).parse();
+    console.log(readability.content);
+    return readability.content;
   }
 
-  private getReader(tedl: TEDL): Reader {
+  // async processArticle(articleUrl: string): Promise<ReadabilityArticle> 
+  // {
+  //   if (!articleUrl.includes(this.getBaseUrl())) 
+  //   {
+  //     return undefined;
+  //   }
+  //   console.log(articleUrl);
+
+  //   await this.page.goto(articleUrl);
+
+  //   const htmlArticle = await this.page.content();
+
+  //   const document = new JSDOM(htmlArticle);
+  //   const article = new Readability(document.window.document).parse();
+  //   console.log(article.title);
+
+  //   return article;
+  // }
+
+  private getReader(tedl: TEDL): Reader 
+  {
     const loggedIn: boolean =
       tedl.user !== undefined && tedl.user.status === 'logged-in';
     let activeSubscription = false;
-    if (loggedIn === true) {
+    if (loggedIn === true) 
+    {
       activeSubscription =
         tedl.user.IsSubscriber === true &&
         tedl.user.account_type === 'paid' &&

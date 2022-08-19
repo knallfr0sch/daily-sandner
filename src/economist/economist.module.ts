@@ -14,6 +14,7 @@ import { EconomistService } from './economist/economist.service';
     EconomistHttpService,
   ],
   exports: [
+    EconomistService,
     EconomistHttpService,
   ],
 })

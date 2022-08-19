@@ -9,6 +9,8 @@ import { SponModule } from './spon/spon.module';
 import { ForeignAffairsModule } from './foreign-affairs/foreign-affairs.module';
 import { DiscoveryModule } from './discovery/discovery.module';
 import { NewsApiModule } from './news-api/news-api.module';
+import { StartUpModule } from './start-up/start-up.module';
+import { GeneratorModule } from './generator/generator.module';
 
 // General Variables
 export const SCREENSHOT_DIR = 'screenshots/';
@@ -24,6 +26,8 @@ export const EXTENSION_PNG = '.png';
     ForeignAffairsModule,
     DiscoveryModule,
     NewsApiModule,
+    StartUpModule,
+    GeneratorModule,
   ],
   controllers: [AppController],
   providers: [AppService],

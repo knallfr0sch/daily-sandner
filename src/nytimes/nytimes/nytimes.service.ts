@@ -6,7 +6,6 @@ import { Page } from 'puppeteer-core';
 import { EXTENSION_PNG, SCREENSHOT_DIR } from 'src/app.module';
 import { ArticleScraper } from 'src/domain/article-scraper';
 import { LoginFlow } from 'src/domain/login-flow';
-import { ReadabilityArticle } from 'src/domain/readability-article';
 import { Reader } from 'src/domain/reader';
 import { Realm } from 'src/domain/realm';
 import { UsernamePasswordLogin } from 'src/domain/usernamePasswordLogin';
@@ -22,8 +21,8 @@ const NYTIMES_LOGIN_INPUT_PASSWORD = '#password';
 const NYTIMES_SUBMIT_BUTTON = 'button[type="submit"]';
 
 // CREDENTIALS
-const NYTIMES_USER_NAME_KEY = 'NYTIMES_USER_NAME';
-const NYTIMES_USER_PASSWORD_KEY = 'NYTIMES_USER_PASSWORD';
+// const NYTIMES_USER_NAME_KEY = 'NYTIMES_USER_NAME';
+// const NYTIMES_USER_PASSWORD_KEY = 'NYTIMES_USER_PASSWORD';
 
 @Injectable()
 export class NytimesService
@@ -37,7 +36,8 @@ implements OnModuleInit, Realm, ArticleScraper, LoginFlow
     private configService: ConfigService
   ) {}
 
-  async onModuleInit() {
+  async onModuleInit() 
+  {
     // this.loginInfo.username = this.configService.get<string>(NYTIMES_USER_NAME_KEY);
     // this.loginInfo.password = this.configService.get<string>(NYTIMES_USER_PASSWORD_KEY);
     // this.page = await this.puppeteerService.getNewPage();
@@ -48,17 +48,20 @@ implements OnModuleInit, Realm, ArticleScraper, LoginFlow
     // await this.processArticle(exampleArticle);
   }
 
-  getBaseUrl(): string {
+  getBaseUrl(): string 
+  {
     return 'nytimes.com';
   }
 
-  async visitHomepage(): Promise<void> {
+  async visitHomepage(): Promise<void> 
+  {
     const page = this.page;
     await page.goto(`${HTTPS_PREFIX}${this.getBaseUrl()}`);
     await this.page.exposeFunction('getReader', this.getReader);
 
     const isLoggedIn: boolean = (await this.checkLogin()).loggedIn;
-    if (!isLoggedIn) {
+    if (!isLoggedIn) 
+    {
       await this.login();
       await page.goto(`${HTTPS_PREFIX}${this.getBaseUrl()}`);
     }
@@ -67,27 +70,40 @@ implements OnModuleInit, Realm, ArticleScraper, LoginFlow
     });
   }
 
-  async processArticle(articleUrl: string): Promise<ReadabilityArticle> {
-    if (
-      !articleUrl.includes(this.getBaseUrl()) &&
-      !articleUrl.includes('nyti.ms')
-    ) {
+  async processArticle(articleUrl: string): Promise<string>
+  {
+    if (!articleUrl.includes(this.getBaseUrl())) 
+    {
       return undefined;
     }
-
-    await this.page.goto(articleUrl);
-    const htmlArticle = await this.page.content();
-
-    const document = new JSDOM(htmlArticle);
-    const article = new Readability(document.window.document).parse();
-    console.log(article.title);
-    return article;
+    const jsdom = await JSDOM.fromURL(articleUrl);
+    const readability = new Readability(jsdom.window.document).parse();
+    return readability.content;
   }
 
-  async checkLogin(): Promise<Reader> {
+  // async processArticle(articleUrl: string): Promise<ReadabilityArticle> {
+  //   if (
+  //     !articleUrl.includes(this.getBaseUrl()) &&
+  //     !articleUrl.includes('nyti.ms')
+  //   ) {
+  //     return undefined;
+  //   }
+
+  //   await this.page.goto(articleUrl);
+  //   const htmlArticle = await this.page.content();
+
+  //   const document = new JSDOM(htmlArticle);
+  //   const article = new Readability(document.window.document).parse();
+  //   console.log(article.title);
+  //   return article;
+  // }
+
+  async checkLogin(): Promise<Reader> 
+  {
     const previousUrl: string = this.page.url();
     let returnToUrl = false;
-    if (!previousUrl.includes(this.getBaseUrl())) {
+    if (!previousUrl.includes(this.getBaseUrl())) 
+    {
       await this.visitHomepage();
       returnToUrl = true;
     }
@@ -100,20 +116,23 @@ implements OnModuleInit, Realm, ArticleScraper, LoginFlow
 
     const reader = this.getReader(dataLayer);
 
-    if (returnToUrl) {
+    if (returnToUrl) 
+    {
       await this.page.goto(previousUrl);
     }
     return reader;
   }
 
-  private getReader(dataLayer: NYTimesData[]): Reader {
+  private getReader(dataLayer: NYTimesData[]): Reader 
+  {
     const pageData = dataLayer.find((data): data is PageData =>
       isPageData(data)
     );
 
     const loggedIn: boolean = pageData.session?.isLoggedIn === true;
     let activeSubscription = false;
-    if (loggedIn === true) {
+    if (loggedIn === true) 
+    {
       activeSubscription =
         pageData.user.type === 'sub' &&
         pageData.user.subInfo.subscriptions.find(
@@ -127,7 +146,8 @@ implements OnModuleInit, Realm, ArticleScraper, LoginFlow
   /**
    * Logs into NYTimes
    */
-  async login(): Promise<Reader> {
+  async login(): Promise<Reader> 
+  {
     const page = this.page;
 
     await page.goto(NYTIMES_LOGIN_URL);
