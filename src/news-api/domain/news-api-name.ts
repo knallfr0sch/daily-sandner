@@ -1,0 +1,11 @@
+export type NewsApiName =
+    "Bild"
+  | "Der Tagesspiegel"
+  | "Die Zeit"
+  | "Focus"
+  | "Gruenderszene"
+  | "Handelsblatt"
+  | "Spiegel Online"
+  | "T3n"
+  | "Wired.de"
+  | "Wirtschafts Woche"

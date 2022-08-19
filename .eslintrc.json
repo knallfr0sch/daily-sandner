@@ -28,6 +28,8 @@
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-unused-vars": "error",
     "array-element-newline": ["error", "always"],
-    "indent": ["error", 2]
+    "indent": ["error", 2],    
+    "brace-style": ["error", "allman", { "allowSingleLine": true }],
+    "semi": ["error", "always"]
   }
 }

@@ -1,26 +1,28 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { firstValueFrom, map } from 'rxjs';
-import { Discovery } from 'src/domain/discovery-service.interface';
-import { NYTimesArticle } from '../types';
+import { Discovery } from 'src/domain/discovery';
+import { FetchableArticle } from 'src/domain/fetchable-article';
+import { NytimesResult } from './domain/nytimes-result';
+import { NytimesViewedArticle } from './domain/nytimes-viewed-article';
 
-const NYTIMES_API_URL =
-  'https://api.nytimes.com/svc/mostpopular/v2/shared/1.json';
+const NYTIMES_VIEWED_API_URL =
+  'https://api.nytimes.com/svc/mostpopular/v2/viewed/1.json';
 
 @Injectable()
-export class NytimesApiService implements Discovery {
+export class NytimesApiService implements Discovery 
+{
   constructor(private http: HttpService) {}
 
-  async discover() {
-    return firstValueFrom(
-      this.http.get(NYTIMES_API_URL).pipe(
-        map(response => response.data.results),
-        map((nytimesArticles: NYTimesArticle[]) =>
-          nytimesArticles.map(
-            (nytimesArticle: NYTimesArticle) => nytimesArticle.title
-          )
-        )
-      )
+  async discover(): Promise<FetchableArticle[]> 
+  {
+    const httpResult = await firstValueFrom(
+      this.http.get<NytimesResult>(NYTIMES_VIEWED_API_URL).pipe(map(response => response.data))
     );
+
+    const fetchableArticles = httpResult.results.map(nytimesArticle => 
+      NytimesViewedArticle.toFetchableArticle(nytimesArticle)
+    );
+    return fetchableArticles;
   }
 }
