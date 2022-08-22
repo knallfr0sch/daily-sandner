@@ -1,22 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { writeFileSync } from 'fs';
 import { JSDOM } from 'jsdom';
+import { PuppeteerService } from 'src/puppeteer/puppeteer/puppeteer.service';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const html_to_pdf = require('html-pdf-node');
+export const FILE_PATH = './scraper-results/daily-sandner.pdf';
 
 @Injectable()
 export class GeneratorService 
 {
 
+  constructor(
+    private puppeteerService: PuppeteerService,
+  )
+  { }
+
   async generatePdf(articlesHtml: string[])
   {
     const html = this.generateHtmlFromArticles(articlesHtml);
-    // console.log(html);
-
-    const file = { content: html, name: './daily-sandner.pdf' };
-    const pdfBuffer = await html_to_pdf.generatePdf(file, { format: 'A4' });
-    writeFileSync('./scraper-results/daily-sandner.pdf', pdfBuffer);
+    
+    const page = await this.puppeteerService.getNewPage();
+    console.log(html);
+    await page.setContent(html);
+    page.pdf({
+      path: FILE_PATH,
+      format: 'A4',
+      printBackground: true
+    });
   }
 
   private generateHtmlFromArticles(articlesHtml: string[]): string 
