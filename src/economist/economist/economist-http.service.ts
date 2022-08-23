@@ -43,7 +43,6 @@ export class EconomistHttpService implements Discovery
       url,
       title,
       source: "economist",
-      publishedAt: Date.now().toString()
     };
   }
 

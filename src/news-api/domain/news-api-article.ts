@@ -18,7 +18,6 @@ export class NewsApiArticle
       url: newsApiArticle.url,
       title: newsApiArticle.title,
       source: newsApiArticle.source.id,
-      publishedAt: newsApiArticle.publishedAt
     };
   }
 }

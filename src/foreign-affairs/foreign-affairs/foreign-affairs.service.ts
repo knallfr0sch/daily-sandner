@@ -2,7 +2,7 @@ import { Readability } from '@mozilla/readability';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JSDOM } from 'jsdom';
-import { Page } from 'puppeteer-core';
+import { Page } from 'puppeteer';
 import { EXTENSION_PNG, SCREENSHOT_DIR } from 'src/app.module';
 import { LoginFlow } from 'src/domain/login-flow';
 import { Reader } from 'src/domain/reader';
@@ -11,10 +11,10 @@ import { UsernamePasswordLogin } from 'src/domain/usernamePasswordLogin';
 import { PuppeteerService } from 'src/puppeteer/puppeteer/puppeteer.service';
 import { HTTPS_PREFIX } from 'src/util/https-prefix';
 import {
-  ForeignAffairsData,
-  ForeignAffairsUser,
-  ForeignAffairsWindow,
-  isDataForeignAffairsUser
+    ForeignAffairsData,
+    ForeignAffairsUser,
+    ForeignAffairsWindow,
+    isDataForeignAffairsUser
 } from '../types';
 
 // CREDENTIALS

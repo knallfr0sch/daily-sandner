@@ -1,12 +1,21 @@
 import { Controller, Get, Header, StreamableFile } from '@nestjs/common';
 import { createReadStream } from 'fs';
 import { join } from 'path';
-import { AppService } from './app.service';
+import { FetchableArticle } from './domain/fetchable-article';
+import { PrismaService } from './prisma.service';
 
 @Controller()
 export class AppController 
 {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly prismaService: PrismaService
+  ) {}
+
+  @Get('db')
+  async getTestValuesFromDb(): Promise<FetchableArticle[]>
+  {
+    return this.prismaService.fetchableArticle.findMany();
+  }
 
   @Get('pdf')
   @Header('Content-Type', 'image/pdf')

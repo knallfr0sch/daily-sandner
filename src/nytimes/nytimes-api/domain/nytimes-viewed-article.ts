@@ -102,7 +102,6 @@ export class NytimesViewedArticle
       url: nytimesViewedArticle.url,
       title: nytimesViewedArticle.title,
       source: "nytimes",
-      publishedAt: nytimesViewedArticle.published_date
     };
   }
 

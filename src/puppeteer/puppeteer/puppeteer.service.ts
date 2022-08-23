@@ -1,5 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import puppeteer, { Browser, Page } from 'puppeteer-core';
+import puppeteer, { Browser, Page } from 'puppeteer';
 
 const CHROMIUM_USER_DATA_DIR = 'user-data/';
 
@@ -17,19 +17,36 @@ export class PuppeteerService implements OnModuleInit
 
   async initializeBrowser(): Promise<void> 
   {
-    this.logger.log(`Init browser with chrome-bin: ${process.env.CHROME_BIN}`);
-    this.isInitializing = true;
-    this.browser = await puppeteer.launch({
-      headless: true,
-      executablePath: process.env.CHROME_BIN || null,
-      userDataDir: CHROMIUM_USER_DATA_DIR,
-      args: [
-        '--no-sandbox',
-        '--headless',
-        '--disable-gpu',
-        '--disable-dev-shm-usage'
-      ],
-    });
+    this.isInitializing = true;    
+
+    if (process.env.CHROME_BIN)
+    {
+      this.logger.log(`Init browser with chrome-bin: ${process.env.CHROME_BIN}`);
+      this.browser = await puppeteer.launch({
+        headless: true,
+        executablePath: process.env.CHROME_BIN || null,
+        userDataDir: CHROMIUM_USER_DATA_DIR,
+        args: [
+          '--no-sandbox',
+          '--headless',
+          '--disable-gpu',
+          '--disable-dev-shm-usage'
+        ],
+      });      
+    }
+    else
+    {
+      this.browser = await puppeteer.launch({
+        headless: true,
+        args: [
+          '--no-sandbox',
+          '--headless',
+          '--disable-gpu',
+          '--disable-dev-shm-usage'
+        ],
+      });      
+    }    
+    
     this.isInitializing = false;
   }
 
