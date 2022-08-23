@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JSDOM } from 'jsdom';
 import { PuppeteerService } from 'src/puppeteer/puppeteer/puppeteer.service';
 
@@ -7,6 +7,7 @@ export const FILE_PATH = './scraper-results/daily-sandner.pdf';
 @Injectable()
 export class GeneratorService 
 {
+  private logger = new Logger(GeneratorService.name);
 
   constructor(
     private puppeteerService: PuppeteerService,
@@ -15,10 +16,10 @@ export class GeneratorService
 
   async generatePdf(articlesHtml: string[])
   {
+    this.logger.log(`Generating PDF at ${FILE_PATH}`);
     const html = this.generateHtmlFromArticles(articlesHtml);
     
     const page = await this.puppeteerService.getNewPage();
-    console.log(html);
     await page.setContent(html);
     page.pdf({
       path: FILE_PATH,

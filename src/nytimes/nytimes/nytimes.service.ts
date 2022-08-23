@@ -2,7 +2,7 @@ import { Readability } from '@mozilla/readability';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JSDOM } from 'jsdom';
-import { Page } from 'puppeteer';
+import { Page } from 'puppeteer-core';
 import { EXTENSION_PNG, SCREENSHOT_DIR } from 'src/app.module';
 import { ArticleScraper } from 'src/domain/article-scraper';
 import { LoginFlow } from 'src/domain/login-flow';

@@ -1,5 +1,5 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import puppeteer, { Browser, Page } from 'puppeteer';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import puppeteer, { Browser, Page } from 'puppeteer-core';
 
 const CHROMIUM_USER_DATA_DIR = 'user-data/';
 
@@ -8,6 +8,7 @@ export class PuppeteerService implements OnModuleInit
 {
   private browser: Browser;
   private isInitializing = false;
+  private logger = new Logger(PuppeteerService.name);
 
   async onModuleInit(): Promise<void> 
   {
@@ -16,6 +17,7 @@ export class PuppeteerService implements OnModuleInit
 
   async initializeBrowser(): Promise<void> 
   {
+    this.logger.log(`Init browser with chrome-bin: ${process.env.CHROME_BIN}`);
     this.isInitializing = true;
     this.browser = await puppeteer.launch({
       headless: true,

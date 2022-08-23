@@ -27,7 +27,7 @@ services:
             - daily-sandner-network
 
     daily-sandner-server:
-        image: node:16-alpine
+        image: timbru31/node-chrome
         user: ${CURRENT_UID}
         container_name: "daily-sandner-server"
         environment:

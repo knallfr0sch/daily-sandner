@@ -29,9 +29,13 @@ export const EXTENSION_PNG = '.png';
     NewsApiModule,
     StartUpModule,
     GeneratorModule,
+  ],
+  controllers: [
+    AppController
+  ],
+  providers: [
+    AppService,
     PrismaService
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
