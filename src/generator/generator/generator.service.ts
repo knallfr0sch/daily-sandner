@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { mkdir } from 'fs';
 import { JSDOM } from 'jsdom';
 import { PuppeteerService } from 'src/puppeteer/puppeteer/puppeteer.service';
 
@@ -21,6 +22,10 @@ export class GeneratorService
     
     const page = await this.puppeteerService.getNewPage();
     await page.setContent(html);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    mkdir('scraper-results', err => this.logger.log('Directory already exists'));
+
     page.pdf({
       path: FILE_PATH,
       format: 'A4',
