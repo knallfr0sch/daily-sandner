@@ -39,3 +39,4 @@ lerna-debug.log*
 /user-data
 /scraper-results
 .env
+.env.local

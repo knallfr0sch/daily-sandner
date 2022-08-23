@@ -1,0 +1,29 @@
+version: "3"
+networks:
+    daily-sandner-network:
+        ipam:
+            config:
+                - subnet: "172.6.0.0/16"
+
+services:
+    daily-sandner-server:
+        image: node:16-alpine
+        user: ${CURRENT_UID}
+        container_name: "daily-sandner-server"
+        environment:
+            - CHROME_BIN=${CHROME_BIN}
+            - NEWS_API_TOKEN=${NEWS_API_TOKEN}
+            - NYTIMES_API_TOKEN=${NYTIMES_API_TOKEN}
+            - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+            - PORT=3000
+        ports:
+            - "3000:3000"
+            - "9229:9229"
+        working_dir: "/app"
+        volumes:
+            - ./../../:/app
+        networks:
+            - daily-sandner-network
+        command: "npm run start"
+        tty: true
+

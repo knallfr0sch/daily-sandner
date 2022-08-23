@@ -1,0 +1,48 @@
+version: "3"
+networks:
+    daily-sandner-network:
+        ipam:
+            config:
+                - subnet: "172.6.0.0/16"
+
+volumes:
+    daily-sandner-postgres-volume:
+        external: true
+
+services:
+    daily-sandner-postgres:
+        image: 'postgres:14.5'
+        container_name: 'daily-sandner-postgres'
+        environment:
+            - POSTGRES_USER=${ROOT_POSTGRES_USER}
+            - POSTGRES_PASSWORD=${ROOT_POSTGRES_PASSWORD}
+            - POSTGRES_DB=postgres
+        env_file:
+            - ../../.env.local
+        ports:
+            - '5432:5432'
+        volumes:
+            - daily-sandner-postgres-volume:/var/lib/postgresql/data
+        networks:
+            - daily-sandner-network
+
+    daily-sandner-server:
+        image: node:16-alpine
+        user: ${CURRENT_UID}
+        container_name: "daily-sandner-server"
+        environment:
+            - CHROME_BIN=${CHROME_BIN}
+            - NEWS_API_TOKEN=${NEWS_API_TOKEN}
+            - NYTIMES_API_TOKEN=${NYTIMES_API_TOKEN}
+            - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+            - PORT=3000
+        ports:
+            - "3000:3000"
+            - "9229:9229"
+        working_dir: "/app"
+        volumes:
+            - ./../../:/app
+        networks:
+            - daily-sandner-network
+        command: "npm run start:dev"
+        tty: true

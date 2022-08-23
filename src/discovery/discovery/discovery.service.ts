@@ -3,6 +3,7 @@ import { FetchableArticle } from 'src/domain/fetchable-article';
 import { EconomistHttpService } from 'src/economist/economist/economist-http.service';
 import { NewsApiService } from 'src/news-api/news-api/news-api.service';
 import { NytimesApiService } from 'src/nytimes/nytimes-api/nytimes-api.service';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class DiscoveryService
@@ -12,7 +13,8 @@ export class DiscoveryService
   constructor(
     private newsApiService: NewsApiService,
     private nytimesApiService: NytimesApiService,
-    private economistHttpService: EconomistHttpService
+    private economistHttpService: EconomistHttpService,
+    private prisma: PrismaService,
   ) {}
 
   async discoverArticles(): Promise<FetchableArticle[]> 

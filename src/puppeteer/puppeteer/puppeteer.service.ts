@@ -1,7 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import puppeteer, { Browser, Page } from 'puppeteer';
 
-const CHROMIUM_EXECUTABLE_PATH = '/usr/bin/google-chrome-stable';
 const CHROMIUM_USER_DATA_DIR = 'user-data/';
 
 @Injectable()
@@ -20,7 +19,7 @@ export class PuppeteerService implements OnModuleInit
     this.isInitializing = true;
     this.browser = await puppeteer.launch({
       headless: true,
-      executablePath: CHROMIUM_EXECUTABLE_PATH,
+      executablePath: process.env.CHROME_BIN || null,
       userDataDir: CHROMIUM_USER_DATA_DIR,
       args: [
         '--no-sandbox',
