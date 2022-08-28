@@ -24,7 +24,7 @@ export class EconomistHttpService implements Discovery
     const linkArray = Array.from(linkElements);
     const hrefs = linkArray.map(linkElement => linkElement.href);
     const validHrefs = hrefs.filter(href => href.includes(ECONOMIST_URL));
-    const articlePromises = validHrefs.map(async url => await this.getArticle(url));
+    const articlePromises = validHrefs.map(async url => this.getArticle(url));
     const links: Promise<FetchableArticle[]> = Promise.all(articlePromises);
 
     return links;
