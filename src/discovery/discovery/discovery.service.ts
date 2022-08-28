@@ -15,6 +15,9 @@ export class DiscoveryService
     private economistHttpService: EconomistHttpService,
   ) {}
 
+  /**
+   * Discover articles to fetch.
+   */
   async discoverArticles(): Promise<FetchableArticle[]> 
   {
     const articles: FetchableArticle[] = [];
