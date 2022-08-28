@@ -1,22 +1,10 @@
 version: 2.1
 
-
 orbs:
-  node: circleci/node@3.0.0
-
-
-jobs:
-  build-and-test:
-    executor:
-      name: node/default
-    steps:
-      - checkout
-      - node/install-packages
-      - run:
-          command: npm run test
-
+  node: circleci/node@5.0.2
 
 workflows:
-  build-and-test:
+  test:
     jobs:
-      - build-and-test
+      - node/test:
+          test-results-for: jest
