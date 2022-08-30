@@ -11,6 +11,13 @@ export class AzureService implements OnModuleInit
 
   async onModuleInit() 
   {
+    this.logger.log('Initializing Azure service...');
+
+    if (!process.env.AZURE_STORAGE_CONNECTION_STRING)
+    {
+      throw new Error('AZURE_STORAGE_CONNECTION_STRING environment variable is not set.');
+    }
+
     const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
     const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
 
