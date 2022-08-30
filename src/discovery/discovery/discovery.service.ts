@@ -22,17 +22,18 @@ export class DiscoveryService
   {
     const articles: FetchableArticle[] = [];
 
+    this.logger.log('Discovering articles to fetch...');
+
     const newsApiArticles: FetchableArticle[] = await this.newsApiService.discover();
     articles.push(...newsApiArticles);
-    this.logger.log(newsApiArticles.map(article => article.title));
 
     const nytimesArticles: FetchableArticle[] = await this.nytimesApiService.discover();
     articles.push(...nytimesArticles);
-    this.logger.log(nytimesArticles.map(article => article.title));
 
     const economistArticles: FetchableArticle[] = await this.economistHttpService.discover();
     articles.push(...economistArticles);
-    this.logger.log(economistArticles.map(article => article.title));
+
+    this.logger.log(`Discovered ${articles.length} articles.`);
 
     return articles;
   }

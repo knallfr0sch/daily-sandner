@@ -14,9 +14,8 @@ services:
         image: 'postgres:14.5'
         container_name: 'daily-sandner-postgres'
         environment:
-            - POSTGRES_USER=${ROOT_POSTGRES_USER}
-            - POSTGRES_PASSWORD=${ROOT_POSTGRES_PASSWORD}
-            - POSTGRES_DB=postgres
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
         env_file:
             - ../../.env.local
         ports:
@@ -31,6 +30,8 @@ services:
         user: ${CURRENT_UID}
         container_name: "daily-sandner-server"
         environment:
+            - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@daily-sandner-postgres:5432/${POSTGRES_USER}?schema=public
+            - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING}
             - CHROME_BIN=${CHROME_BIN}
             - NEWS_API_TOKEN=${NEWS_API_TOKEN}
             - NYTIMES_API_TOKEN=${NYTIMES_API_TOKEN}

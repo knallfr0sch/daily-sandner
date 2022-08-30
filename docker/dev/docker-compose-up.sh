@@ -17,4 +17,4 @@ done
 npm run migrate:dev
 
 # Start all services
-# docker-compose -f ./docker/dev/docker-compose.yml --compatibility up -d
+docker-compose -f ./docker/dev/docker-compose.yml --compatibility up -d

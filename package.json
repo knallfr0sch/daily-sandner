@@ -31,6 +31,7 @@
     "*.{js,ts}": "eslint --fix"
   },
   "dependencies": {
+    "@azure/storage-blob": "^12.11.0",
     "@mozilla/readability": "^0.4.2",
     "@nestjs/axios": "^0.1.0",
     "@nestjs/common": "^9.0.0",
