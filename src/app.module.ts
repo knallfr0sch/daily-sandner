@@ -9,7 +9,7 @@ import { ForeignAffairsModule } from './foreign-affairs/foreign-affairs.module';
 import { GeneratorModule } from './generator/generator.module';
 import { NewsApiModule } from './news-api/news-api.module';
 import { NytimesModule } from './nytimes/nytimes.module';
-import { PrismaService } from './prisma.service';
+import { PrismaModule } from './prisma/prisma.module';
 import { PuppeteerModule } from './puppeteer/puppeteer.module';
 import { SponModule } from './spon/spon.module';
 
@@ -29,13 +29,13 @@ export const EXTENSION_PNG = '.png';
     NewsApiModule,
     GeneratorModule,
     AzureModule,
+    PrismaModule,
   ],
   controllers: [
     AppController
   ],
   providers: [
     AppService,
-    PrismaService
   ],
 })
 export class AppModule {}

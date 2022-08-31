@@ -12,9 +12,9 @@ datasource db {
 }
 
 model FetchableArticle {
-  id        Int      @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   url       String
-  title     String?
+  title     String
   source    String
   updatedAt DateTime @updatedAt
 }

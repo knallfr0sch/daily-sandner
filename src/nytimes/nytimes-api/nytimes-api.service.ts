@@ -14,6 +14,9 @@ export class NytimesApiService implements Discovery
 {
   constructor(private http: HttpService) {}
 
+  /**
+   * Discover articles on nytimes.com by calling their API.
+   */
   async discover(): Promise<FetchableArticle[]> 
   {
     const httpResult = await firstValueFrom(

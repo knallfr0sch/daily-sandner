@@ -2,7 +2,7 @@
 CREATE TABLE "FetchableArticle" (
     "id" SERIAL NOT NULL,
     "url" TEXT NOT NULL,
-    "title" TEXT,
+    "title" TEXT NOT NULL,
     "source" TEXT NOT NULL,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { EconomistModule } from 'src/economist/economist.module';
 import { NewsApiModule } from 'src/news-api/news-api.module';
 import { NytimesModule } from 'src/nytimes/nytimes.module';
+import { PrismaModule } from 'src/prisma/prisma.module';
 import { DiscoveryService } from './discovery/discovery.service';
 
 @Module({
@@ -9,9 +10,10 @@ import { DiscoveryService } from './discovery/discovery.service';
     NewsApiModule,
     NytimesModule,
     EconomistModule,
+    PrismaModule,
   ],
   providers: [
-    DiscoveryService
+    DiscoveryService,
   ],
   exports: [
     DiscoveryService

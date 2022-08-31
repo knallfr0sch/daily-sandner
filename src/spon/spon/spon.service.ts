@@ -11,10 +11,10 @@ import { Realm } from 'src/domain/realm';
 import { UsernamePasswordLogin } from 'src/domain/usernamePasswordLogin';
 import { PuppeteerService } from 'src/puppeteer/puppeteer/puppeteer.service';
 import {
-    isSponLoginInfo,
-    SARA_DATA,
-    SpiegelWindow,
-    SponLoginInfo
+  isSponLoginInfo,
+  SARA_DATA,
+  SpiegelWindow,
+  SponLoginInfo
 } from '../types';
 
 // SPON

@@ -14,6 +14,9 @@ export class EconomistHttpService implements Discovery
     private http: HttpService,
   ) {}
 
+  /**
+   * Discover articles on economist.com by scraping `The world in brief` for links.
+   */
   async discover(): Promise<FetchableArticle[]> 
   {
     const jsdom = await JSDOM.fromURL(ECONOMIST_BRIEF_URL);
@@ -30,6 +33,9 @@ export class EconomistHttpService implements Discovery
     return links;
   }
 
+  /**
+   * Retrieve a single article from economist.com.
+   */
   async getArticle(url: string): Promise<FetchableArticle>
   {
     const jsdom: JSDOM = await JSDOM.fromURL(url);
