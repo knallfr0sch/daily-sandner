@@ -1,4 +1,4 @@
-import { Controller, Get, Header, StreamableFile } from '@nestjs/common';
+import { Controller, Get, Header, Render, StreamableFile } from '@nestjs/common';
 import { DiscoveryService } from './discovery/discovery/discovery.service';
 import { FetchableArticle } from './domain/fetchable-article';
 import { GeneratorService } from './generator/generator/generator.service';
@@ -15,7 +15,14 @@ export class AppController
     private readonly discoveryService: DiscoveryService,
   ) {}
 
-  @Get()
+  @Get('Home')
+  @Render('Home')
+  getHello() 
+  {
+    return { message: 'NestJS ❤ Svelte' };
+  }
+
+
   @Get('db')
   async getTestValuesFromDb(): Promise<FetchableArticle[]>
   {
@@ -43,9 +50,11 @@ export class AppController
   }
 
   @Get('generate')
-  async generate(): Promise<Buffer> 
+  async generate(): Promise<StreamableFile> 
   {
-    return this.generatorService.generatePdf([TEST_ARTICLE]);
+    return new StreamableFile(
+      await this.generatorService.generatePdf([TEST_ARTICLE])
+    );
   }
 }
 
