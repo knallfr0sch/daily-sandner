@@ -17,10 +17,11 @@ export class GeneratorService
   async generatePdf(articlesHtml: string[]): Promise<Buffer>
   {
     this.logger.log(`Generating PDF...`);
-    const html = this.generateHtmlFromArticles(articlesHtml);
+    // const html = this.generateHtmlFromArticles(articlesHtml);
     
     const page = await this.puppeteerService.getNewPage();
-    await page.setContent(html);
+    // await page.setContent(html);
+    await page.goto('http://localhost:3000/Home');
 
     this.pdfBuffer = await page.pdf({
       format: 'A4',

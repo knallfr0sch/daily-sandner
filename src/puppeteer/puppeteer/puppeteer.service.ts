@@ -10,7 +10,7 @@ export class PuppeteerService implements OnModuleInit
   private isInitializing = false;
   private logger = new Logger(PuppeteerService.name);
 
-  async onModuleInit(): Promise<void> 
+  async onModuleInit(): Promise<void>
   {
     await this.initializeBrowser();
   }

@@ -54,9 +54,10 @@ implements LoginFlow, Realm, ArticleScraper, OnModuleInit
 
     // this.page = await this.puppeteerService.getNewPage();
 
+    // this.page = await this.puppeteerService.getNewPage();
+
     // await this.visitHomepage();
-    // const exampleArticle =
-    //   'https://www.spiegel.de/politik/deutschland/energiekrise-drehen-wir-den-spiess-um-und-oeffnen-nord-stream-2-kolumne-a-f59e705d-5a9b-4457-aee0-ceceee6796cc';
+    // const exampleArticle = "https://www.spiegel.de/politik/deutschland/energiekrise-drehen-wir-den-spiess-um-und-oeffnen-nord-stream-2-kolumne-a-f59e705d-5a9b-4457-aee0-ceceee6796cc";
     // await this.processArticle(exampleArticle);
   }
 

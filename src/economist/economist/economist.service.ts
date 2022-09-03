@@ -17,8 +17,8 @@ import { EconomistWindow, TEDL } from '../types';
 const economist_login_url = 'https://www.economist.com/api/auth/login';
 
 // CREDENTIALS
-// const ECONOMIST_USER_NAME_KEY = 'ECONOMIST_USER_NAME';
-// const ECONOMIST_USER_PASSWORD_KEY = 'ECONOMIST_USER_PASSWORD';
+const ECONOMIST_USER_NAME_KEY = 'ECONOMIST_USER_NAME';
+const ECONOMIST_USER_PASSWORD_KEY = 'ECONOMIST_USER_PASSWORD';
 
 @Injectable()
 export class EconomistService
@@ -29,18 +29,20 @@ implements OnModuleInit, Realm, ArticleScraper, LoginFlow
 
   constructor(
     private puppeteerService: PuppeteerService,
-    private configService: ConfigService
-  ) {}
+    private configService: ConfigService,
+  ) { }
 
   async onModuleInit() 
   {
-    // this.loginInfo.username = this.configService.get<string>(ECONOMIST_USER_NAME_KEY);
-    // this.loginInfo.password = this.configService.get<string>(ECONOMIST_USER_PASSWORD_KEY);
+    this.loginInfo.username = this.configService.get<string>(ECONOMIST_USER_NAME_KEY);
+    this.loginInfo.password = this.configService.get<string>(ECONOMIST_USER_PASSWORD_KEY);
+
+    // console.log(this.loginInfo.username);
+
     // this.page = await this.puppeteerService.getNewPage();
-    // this.page.exposeFunction('nodeChildren', nodeChildren);
+
     // await this.visitHomepage();
-    // const exampleArticle =
-    //   'https://www.economist.com/business/2022/08/15/republicans-are-falling-out-of-love-with-america-inc';
+    // const exampleArticle = "https://www.economist.com/business/2022/08/15/republicans-are-falling-out-of-love-with-america-inc";
     // await this.processArticle(exampleArticle);
   }
 
